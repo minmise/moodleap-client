@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">client</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="go_to_register">Go to Register</string>
+    <string name="register">Register</string>
+    <string name="go_to_login">Go to login</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>
