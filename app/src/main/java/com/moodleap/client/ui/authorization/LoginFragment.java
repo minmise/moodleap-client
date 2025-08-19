@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
 import com.moodleap.client.requests.AuthRepository;
 
@@ -37,9 +39,9 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(v -> {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
-            AuthRepository repo = new AuthRepository();
-            String uid = repo.login(email, password);
-            saveUid(requireContext(), uid);
+            MainActivity.getAuthService().login(email, password);
+            Toast.makeText(getContext(), "UID = " + MainActivity.getUid(getContext()) +
+                    "; JWT = " + MainActivity.getToken(getContext()), Toast.LENGTH_LONG).show();
         });
     }
 

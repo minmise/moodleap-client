@@ -39,5 +39,9 @@ dependencies {
     androidTestImplementation libs.espresso.core
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation libs.retrofit
+    implementation libs.retrofit2.converter.gson
+    implementation libs.okhttp
+    implementation libs.okhttp3.logging.interceptor
 
 }

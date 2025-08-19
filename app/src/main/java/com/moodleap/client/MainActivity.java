@@ -11,7 +11,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.moodleap.client.requests.AuthService;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static AuthService authService;
 
     public static void saveUid(Context context, String uid) {
         context.getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -25,6 +29,22 @@ public class MainActivity extends AppCompatActivity {
                 .getString("uid", null);
     }
 
+    public static void saveToken(Context context, String token) {
+        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                .edit()
+                .putString("jwt_token", token)
+                .apply();
+    }
+
+    public static String getToken(Context context) {
+        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                .getString("jwt_token", null);
+    }
+
+    public static AuthService getAuthService() {
+        return authService;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +55,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String uid = getUid(this);
-        if (uid != null) {
-            Log.d("Auth", "UID найден: " + uid);
-            Toast.makeText(this, "UID найден: " + uid, Toast.LENGTH_LONG).show();
-        } else {
-            Log.d("Auth", "UID не найден");
+        if (authService == null) {
+            authService = new AuthService(this);
         }
+        Toast.makeText(this, "BASE_URL = " + Config.getBaseUrl(this), Toast.LENGTH_LONG).show();
     }
 }
