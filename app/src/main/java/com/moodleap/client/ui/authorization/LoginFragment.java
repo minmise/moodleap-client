@@ -1,8 +1,5 @@
 package com.moodleap.client.ui.authorization;
 
-import static com.moodleap.client.MainActivity.saveUid;
-
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
-import com.moodleap.client.requests.AuthRepository;
 
 public class LoginFragment extends Fragment {
 

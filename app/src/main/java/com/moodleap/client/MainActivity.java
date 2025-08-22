@@ -10,12 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.room.Room;
 
+import com.moodleap.client.db.AppDatabase;
+import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.requests.AuthService;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static AuthService authService;
+    private AppDatabase db;
 
     public static void saveUid(Context context, String uid) {
         context.getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -58,6 +64,18 @@ public class MainActivity extends AppCompatActivity {
         if (authService == null) {
             authService = new AuthService(this);
         }
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "moodleap").build();
+        Mood testMood = new Mood();
+        testMood.id = 1L;
+        testMood.emotion = 2L;
+        testMood.timestamp = System.currentTimeMillis();
+        new Thread(() -> {
+            db.moodDao().insert(testMood);
+            List<Mood> moods = db.moodDao().getMoods();
+            for (Mood m : moods) {
+                Log.d("DB_TEST", "Mood: " + m.id + ", " + m.emotion + ", " + m.timestamp);
+            }
+        }).start();
         Toast.makeText(this, "BASE_URL = " + Config.getBaseUrl(this), Toast.LENGTH_LONG).show();
     }
 }
