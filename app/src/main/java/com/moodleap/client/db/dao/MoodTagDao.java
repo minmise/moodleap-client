@@ -1,5 +1,6 @@
 package com.moodleap.client.db.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -14,5 +15,5 @@ public interface MoodTagDao {
     void insert(MoodTag moodTag);
 
     @Query("SELECT * FROM mood_tags WHERE moodId = :moodId")
-    List<MoodTag> getTagsForMood(Long moodId);
+    LiveData<List<MoodTag>> getTagsByMood(Long moodId);
 }

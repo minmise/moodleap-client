@@ -50,5 +50,6 @@ dependencies {
     implementation libs.okhttp3.logging.interceptor
     implementation libs.room.runtime
     annotationProcessor libs.androidx.room.compiler
+    implementation libs.androidx.core.testing
 
 }

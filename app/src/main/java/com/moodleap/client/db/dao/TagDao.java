@@ -1,5 +1,6 @@
 package com.moodleap.client.db.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -14,5 +15,5 @@ public interface TagDao {
     void insert(Tag tag);
 
     @Query("SELECT * FROM tags")
-    List<Tag> getTags();
+    LiveData<List<Tag>> getTags();
 }

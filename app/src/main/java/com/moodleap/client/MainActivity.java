@@ -14,6 +14,9 @@ import androidx.room.Room;
 
 import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.entity.Mood;
+import com.moodleap.client.db.repository.MoodRepository;
+import com.moodleap.client.db.repository.MoodTagRepository;
+import com.moodleap.client.db.repository.TagRepository;
 import com.moodleap.client.requests.AuthService;
 
 import java.util.List;
@@ -21,7 +24,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static AuthService authService;
-    private AppDatabase db;
+    private static AppDatabase db;
+    private static MoodRepository moodRepository;
+    private static TagRepository tagRepository;
+    private static MoodTagRepository moodTagRepository;
 
     public static void saveUid(Context context, String uid) {
         context.getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -51,6 +57,22 @@ public class MainActivity extends AppCompatActivity {
         return authService;
     }
 
+    public static AppDatabase getDb() {
+        return db;
+    }
+
+    public static MoodRepository getMoodRepository() {
+        return moodRepository;
+    }
+
+    public static TagRepository getTagRepository() {
+        return tagRepository;
+    }
+
+    public static MoodTagRepository getMoodTagRepository() {
+        return moodTagRepository;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,17 +87,9 @@ public class MainActivity extends AppCompatActivity {
             authService = new AuthService(this);
         }
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "moodleap").build();
-        Mood testMood = new Mood();
-        testMood.id = 1L;
-        testMood.emotion = 2L;
-        testMood.timestamp = System.currentTimeMillis();
-        new Thread(() -> {
-            db.moodDao().insert(testMood);
-            List<Mood> moods = db.moodDao().getMoods();
-            for (Mood m : moods) {
-                Log.d("DB_TEST", "Mood: " + m.id + ", " + m.emotion + ", " + m.timestamp);
-            }
-        }).start();
+        moodRepository = new MoodRepository(db);
+        tagRepository = new TagRepository(db);
+        moodTagRepository = new MoodTagRepository(db);
         Toast.makeText(this, "BASE_URL = " + Config.getBaseUrl(this), Toast.LENGTH_LONG).show();
     }
 }
