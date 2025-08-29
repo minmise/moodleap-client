@@ -7,4 +7,10 @@
     <string name="register">Register</string>
     <string name="go_to_login">Go to login</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="log_out">Log out</string>
+    <string name="mood">mood</string>
+    <string name="statistics">statistics</string>
+    <string name="profile">profile</string>
+    <string name="mood_entry_screen">Mood entry screen</string>
+    <string name="statistics_screen">Statistics screen</string>
 </resources>

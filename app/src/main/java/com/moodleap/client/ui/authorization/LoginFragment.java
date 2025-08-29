@@ -1,5 +1,6 @@
 package com.moodleap.client.ui.authorization;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,9 +26,12 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button btnRegister = view.findViewById(R.id.btnGoToRegister);
-        btnRegister.setOnClickListener(v ->
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_login_to_register));
+        btnRegister.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.auth_container, new RegisterFragment())
+                    .commit();
+        });
 
         Button loginButton = view.findViewById(R.id.btnLogin);
         EditText emailField = view.findViewById(R.id.loginEmail);
@@ -36,8 +40,9 @@ public class LoginFragment extends Fragment {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
             MainActivity.getAuthService().login(email, password);
-            Toast.makeText(getContext(), "UID = " + MainActivity.getUid(getContext()) +
-                    "; JWT = " + MainActivity.getToken(getContext()), Toast.LENGTH_LONG).show();
+            if (MainActivity.getToken(requireContext()) != null) {
+                ((MainActivity)requireActivity()).showMainUi();
+            }
         });
     }
 

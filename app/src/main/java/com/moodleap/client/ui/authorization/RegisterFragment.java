@@ -25,9 +25,12 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button btnLogin = view.findViewById(R.id.btnGoToLogin);
-        btnLogin.setOnClickListener(v ->
-                NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_register_to_login));
+        btnLogin.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.auth_container, new LoginFragment())
+                    .commit();
+        });
         Button registerButton = view.findViewById(R.id.btnRegister);
         EditText emailField = view.findViewById(R.id.registerEmail);
         EditText passwordField = view.findViewById(R.id.registerPassword);

@@ -54,6 +54,7 @@ public class AuthService {
                     //Toast.makeText(context, "jwt: " + response.body().getToken(), Toast.LENGTH_LONG).show();
                     MainActivity.saveToken(context, response.body().getToken());
                     MainActivity.saveUid(context, response.body().getUid());
+                    MainActivity.saveEmail(context, email);
                 } else {
                     Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_LONG).show();
                 }

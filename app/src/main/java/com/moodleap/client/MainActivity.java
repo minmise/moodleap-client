@@ -1,8 +1,12 @@
 package com.moodleap.client;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -10,14 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.moodleap.client.db.AppDatabase;
-import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.repository.MoodRepository;
 import com.moodleap.client.db.repository.MoodTagRepository;
 import com.moodleap.client.db.repository.TagRepository;
 import com.moodleap.client.requests.AuthService;
+import com.moodleap.client.ui.authorization.LoginFragment;
+import com.moodleap.client.ui.main.MoodEntryFragment;
+import com.moodleap.client.ui.main.StatisticsFragment;
+import com.moodleap.client.ui.main.UserInfoFragment;
 
 import java.util.List;
 
@@ -28,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private static MoodRepository moodRepository;
     private static TagRepository tagRepository;
     private static MoodTagRepository moodTagRepository;
+
+    private FrameLayout authContainer;
+    private LinearLayout mainContainer;
 
     public static void saveUid(Context context, String uid) {
         context.getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -53,6 +65,18 @@ public class MainActivity extends AppCompatActivity {
                 .getString("jwt_token", null);
     }
 
+    public static void saveEmail(Context context, String email) {
+        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                .edit()
+                .putString("email", email)
+                .apply();
+    }
+
+    public static String getEmail(Context context) {
+        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                .getString("email", null);
+    }
+
     public static AuthService getAuthService() {
         return authService;
     }
@@ -73,6 +97,53 @@ public class MainActivity extends AppCompatActivity {
         return moodTagRepository;
     }
 
+    private boolean isUserLoggedIn() {
+        SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
+        return prefs.contains("jwt_token");
+    }
+
+    public void showAuthUi() {
+        authContainer.setVisibility(View.VISIBLE);
+        mainContainer.setVisibility(View.GONE);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.auth_container, new LoginFragment())
+                .commit();
+    }
+
+    public void showMainUi() {
+        authContainer.setVisibility(View.GONE);
+        mainContainer.setVisibility(View.VISIBLE);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new MoodEntryFragment())
+                .commit();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selected = null;
+            if (item.getItemId() == R.id.nav_mood) {
+                selected = new MoodEntryFragment();
+            } else if (item.getItemId() == R.id.nav_statistics) {
+                selected = new StatisticsFragment();
+            } else if (item.getItemId() == R.id.nav_profile) {
+                selected = new UserInfoFragment();
+            }
+            if (selected != null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, selected)
+                        .commit();
+            }
+            return true;
+        });
+    }
+
+    public void logout() {
+        getSharedPreferences("auth", MODE_PRIVATE).edit().clear().apply();
+        showAuthUi();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +161,12 @@ public class MainActivity extends AppCompatActivity {
         moodRepository = new MoodRepository(db);
         tagRepository = new TagRepository(db);
         moodTagRepository = new MoodTagRepository(db);
-        Toast.makeText(this, "BASE_URL = " + Config.getBaseUrl(this), Toast.LENGTH_LONG).show();
+        authContainer = findViewById(R.id.auth_container);
+        mainContainer = findViewById(R.id.main_container);
+        if (isUserLoggedIn()) {
+            showMainUi();
+        } else {
+            showAuthUi();
+        }
     }
 }
