@@ -8,7 +8,7 @@ public class Mood {
 
     @PrimaryKey(autoGenerate = true)
     public Long id;
-    public String uid;
+    public Long serverId;
     public String userId;
     public Long emotion;
     public Long timestamp;

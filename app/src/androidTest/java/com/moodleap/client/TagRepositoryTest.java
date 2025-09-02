@@ -3,10 +3,8 @@ package com.moodleap.client;
 import android.content.Context;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.After;
@@ -18,11 +16,8 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import com.moodleap.client.db.AppDatabase;
-import com.moodleap.client.db.dao.TagDao;
 import com.moodleap.client.db.entity.Tag;
 import com.moodleap.client.db.repository.TagRepository;
-
-import java.util.List;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -47,13 +42,13 @@ public class TagRepositoryTest {
     @Test
     public void testInsertTag() throws Exception {
         Tag tag = new Tag();
-        tag.name = "study";
+        tag.title = "study";
         tagRepo.insert(tag);
         Thread.sleep(200);
         tagRepo.getTags().observeForever(tags -> {
             assertNotNull(tags);
             assertEquals(1, tags.size());
-            assertEquals("study", tags.get(0).name);
+            assertEquals("study", tags.get(0).title);
         });
 
     }

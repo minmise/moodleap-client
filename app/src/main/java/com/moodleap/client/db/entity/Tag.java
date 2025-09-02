@@ -8,7 +8,7 @@ public class Tag {
 
     @PrimaryKey(autoGenerate = true)
     public Long id;
-    public String uid;
-    public String name;
+    public Long serverId;
+    public String title;
 
 }

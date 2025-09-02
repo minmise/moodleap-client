@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b2229af4451eaea5dc16fc1ecae1ad11",
+    "identityHash": "cf11276d3d439180252c6de8f9321d87",
     "entities": [
       {
         "tableName": "moods",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` TEXT, `userId` TEXT, `emotion` INTEGER, `timestamp` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `userId` TEXT, `emotion` INTEGER, `timestamp` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,9 +15,9 @@
             "notNull": false
           },
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
-            "affinity": "TEXT",
+            "fieldPath": "serverId",
+            "columnName": "serverId",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "tags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` TEXT, `name` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `title` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -59,14 +59,14 @@
             "notNull": false
           },
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
-            "affinity": "TEXT",
+            "fieldPath": "serverId",
+            "columnName": "serverId",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
-            "fieldPath": "name",
-            "columnName": "name",
+            "fieldPath": "title",
+            "columnName": "title",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -82,7 +82,7 @@
       },
       {
         "tableName": "mood_tags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` TEXT, `moodId` INTEGER, `tagId` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `moodId` INTEGER, `tagId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -91,9 +91,9 @@
             "notNull": false
           },
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
-            "affinity": "TEXT",
+            "fieldPath": "serverId",
+            "columnName": "serverId",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -122,7 +122,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b2229af4451eaea5dc16fc1ecae1ad11')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cf11276d3d439180252c6de8f9321d87')"
     ]
   }
 }
