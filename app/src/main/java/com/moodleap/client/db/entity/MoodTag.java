@@ -8,7 +8,6 @@ public class MoodTag {
 
     @PrimaryKey(autoGenerate = true)
     public Long id;
-    public Long serverId;
     public Long moodId;
     public Long tagId;
 
