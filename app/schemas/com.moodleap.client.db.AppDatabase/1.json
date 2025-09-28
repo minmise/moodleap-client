@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cf11276d3d439180252c6de8f9321d87",
+    "identityHash": "ca84270b3f1eda963bae1a51d33ab553",
     "entities": [
       {
         "tableName": "moods",
@@ -82,17 +82,11 @@
       },
       {
         "tableName": "mood_tags",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `moodId` INTEGER, `tagId` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `moodId` INTEGER, `tagId` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "serverId",
-            "columnName": "serverId",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -122,7 +116,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cf11276d3d439180252c6de8f9321d87')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ca84270b3f1eda963bae1a51d33ab553')"
     ]
   }
 }

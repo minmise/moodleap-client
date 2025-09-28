@@ -3,11 +3,9 @@ package com.moodleap.client;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,17 +20,19 @@ import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.repository.MoodRepository;
 import com.moodleap.client.db.repository.MoodTagRepository;
 import com.moodleap.client.db.repository.TagRepository;
-import com.moodleap.client.requests.AuthService;
+import com.moodleap.client.requests.service.AuthService;
+import com.moodleap.client.requests.service.MoodService;
+import com.moodleap.client.requests.service.TagService;
 import com.moodleap.client.ui.authorization.LoginFragment;
 import com.moodleap.client.ui.main.MoodEntryFragment;
 import com.moodleap.client.ui.main.StatisticsFragment;
 import com.moodleap.client.ui.main.UserInfoFragment;
 
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
 
     private static AuthService authService;
+    private static TagService tagService;
+    private static MoodService moodService;
     private static AppDatabase db;
     private static MoodRepository moodRepository;
     private static TagRepository tagRepository;
@@ -79,6 +79,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static AuthService getAuthService() {
         return authService;
+    }
+
+    public static TagService getTagService() {
+        return tagService;
+    }
+
+    public static MoodService getMoodService() {
+        return moodService;
     }
 
     public static AppDatabase getDb() {
@@ -156,6 +164,12 @@ public class MainActivity extends AppCompatActivity {
         });
         if (authService == null) {
             authService = new AuthService(this);
+        }
+        if (tagService == null) {
+            tagService = new TagService(this);
+        }
+        if (moodService == null) {
+            moodService = new MoodService(this);
         }
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "moodleap").build();
         moodRepository = new MoodRepository(db);

@@ -1,16 +1,16 @@
-package com.moodleap.client.requests;
+package com.moodleap.client.requests.service;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.Gson;
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.dto.AuthResponse;
 import com.moodleap.client.dto.LoginRequest;
 import com.moodleap.client.dto.RegisterRequest;
+import com.moodleap.client.requests.api.AuthApi;
+import com.moodleap.client.requests.RetrofitClient;
 
 import retrofit2.Call;
 import retrofit2.Callback;
