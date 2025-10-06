@@ -22,8 +22,28 @@ public class TagRepository {
         Executors.newSingleThreadExecutor().execute(() -> tagDao.insert(tag));
     }
 
+    public void update(Tag tag) {
+        Executors.newSingleThreadExecutor().execute(() -> tagDao.update(tag));
+    }
+
+    public void insertOrUpdate(Tag tag) {
+        if (tagDao.getTagByServerId(tag.serverId) == null) {
+            insert(tag);
+        } else {
+            update(tag);
+        }
+    }
+
     public LiveData<List<Tag>> getTags() {
         return tagDao.getTags();
+    }
+
+    public Tag getTagByServerId(Long serverId) {
+        return tagDao.getTagByServerId(serverId);
+    }
+
+    public Tag getTagById(Long id) {
+        return tagDao.getTagById(id);
     }
 
 }

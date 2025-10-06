@@ -12,6 +12,7 @@ public class Mood {
     public String userId;
     public Long emotion;
     public Long timestamp;
+    public boolean isSynced = false;
 
     public void setId(Long id) {
         this.id = id;

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ca84270b3f1eda963bae1a51d33ab553",
+    "identityHash": "926708cc5ec2a717eb67cf45f40593e5",
     "entities": [
       {
         "tableName": "moods",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `userId` TEXT, `emotion` INTEGER, `timestamp` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `serverId` INTEGER, `userId` TEXT, `emotion` INTEGER, `timestamp` INTEGER, `isSynced` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,12 @@
             "columnName": "timestamp",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -116,7 +122,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ca84270b3f1eda963bae1a51d33ab553')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '926708cc5ec2a717eb67cf45f40593e5')"
     ]
   }
 }

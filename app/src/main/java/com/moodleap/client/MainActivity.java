@@ -14,12 +14,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.repository.MoodRepository;
 import com.moodleap.client.db.repository.MoodTagRepository;
 import com.moodleap.client.db.repository.TagRepository;
+import com.moodleap.client.requests.SyncWorker;
 import com.moodleap.client.requests.service.AuthService;
 import com.moodleap.client.requests.service.MoodService;
 import com.moodleap.client.requests.service.TagService;
@@ -27,6 +33,8 @@ import com.moodleap.client.ui.authorization.LoginFragment;
 import com.moodleap.client.ui.main.MoodEntryFragment;
 import com.moodleap.client.ui.main.StatisticsFragment;
 import com.moodleap.client.ui.main.UserInfoFragment;
+
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -175,6 +183,19 @@ public class MainActivity extends AppCompatActivity {
         moodRepository = new MoodRepository(db);
         tagRepository = new TagRepository(db);
         moodTagRepository = new MoodTagRepository(db);
+        PeriodicWorkRequest periodicSync =
+                new PeriodicWorkRequest.Builder(SyncWorker.class, 5, TimeUnit.MINUTES)
+                        .setConstraints(
+                                new Constraints.Builder()
+                                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                                        .build())
+                        .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "sync_worker",
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicSync
+        );
         authContainer = findViewById(R.id.auth_container);
         mainContainer = findViewById(R.id.main_container);
         if (isUserLoggedIn()) {

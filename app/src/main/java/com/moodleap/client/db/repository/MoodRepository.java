@@ -35,4 +35,12 @@ public class MoodRepository {
         return moodDao.getMoodsByUserId(userId);
     }
 
+    public List<Mood> getUnsyncedMoodsByUserId(String userId) {
+        return moodDao.getUnsyncedMoodsByUserId(userId);
+    }
+
+    public Mood getMoodByServerId(Long serverId) {
+        return moodDao.getMoodByServerId(serverId);
+    }
+
 }

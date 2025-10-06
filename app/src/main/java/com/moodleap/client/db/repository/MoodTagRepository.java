@@ -26,4 +26,8 @@ public class MoodTagRepository {
         return moodTagDao.getTagsByMood(moodId);
     }
 
+    public List<MoodTag> getTagsByMoodIdUnlive(Long moodId) {
+        return moodTagDao.getTagsByMoodUnlive(moodId);
+    }
+
 }

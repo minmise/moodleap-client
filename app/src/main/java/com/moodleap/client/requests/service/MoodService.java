@@ -28,4 +28,7 @@ public class MoodService {
         return api.createMood(token, moodDto);
     }
 
+    public Context getContext() {
+        return context;
+    }
 }

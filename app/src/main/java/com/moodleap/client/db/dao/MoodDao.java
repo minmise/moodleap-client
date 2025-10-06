@@ -19,6 +19,12 @@ public interface MoodDao {
     @Query("SELECT * FROM moods WHERE userId = :userId")
     LiveData<List<Mood>> getMoodsByUserId(String userId);
 
+    @Query("SELECT * FROM moods WHERE userId = :userId AND isSynced = 0")
+    List<Mood> getUnsyncedMoodsByUserId(String userId);
+
+    @Query("SELECT * FROM moods WHERE serverId = :serverId LIMIT 1")
+    Mood getMoodByServerId(Long serverId);
+
     @Update
     void update(Mood mood);
 

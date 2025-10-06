@@ -24,4 +24,7 @@ public class TagService {
         return api.getTags(token);
     }
 
+    public Context getContext() {
+        return context;
+    }
 }

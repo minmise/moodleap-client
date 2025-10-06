@@ -16,4 +16,7 @@ public interface MoodTagDao {
 
     @Query("SELECT * FROM mood_tags WHERE moodId = :moodId")
     LiveData<List<MoodTag>> getTagsByMood(Long moodId);
+
+    @Query("SELECT * FROM mood_tags WHERE moodId = :moodId")
+    List<MoodTag> getTagsByMoodUnlive(Long moodId);
 }
