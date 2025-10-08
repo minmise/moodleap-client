@@ -1,13 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tv_mood_entry"
+    <LinearLayout
+        android:id="@+id/moodRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/mood_entry_screen" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tvAwful"
+            android:text="Awful"
+            style="@style/MoodOptionStyle" />
+
+        <TextView
+            android:id="@+id/tvBad"
+            android:text="Bad"
+            style="@style/MoodOptionStyle" />
+
+        <TextView
+            android:id="@+id/tvNormal"
+            android:text="Normal"
+            style="@style/MoodOptionStyle" />
+
+        <TextView
+            android:id="@+id/tvGood"
+            android:text="Good"
+            style="@style/MoodOptionStyle" />
+
+        <TextView
+            android:id="@+id/tvGreat"
+            android:text="Great"
+            style="@style/MoodOptionStyle" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tagContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:id="@+id/btnCreateMood"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create" />
+
+</LinearLayout>

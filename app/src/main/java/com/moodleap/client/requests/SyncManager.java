@@ -46,6 +46,7 @@ public class SyncManager {
                     .execute();
             if (response.isSuccessful()) {
                 mood.isSynced = true;
+                mood.serverId = response.body().getId();
                 moodRepository.update(mood);
             }
         }

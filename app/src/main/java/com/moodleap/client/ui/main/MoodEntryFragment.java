@@ -1,24 +1,133 @@
 package com.moodleap.client.ui.main;
 
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 
+import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
+import com.moodleap.client.db.Converters;
+import com.moodleap.client.db.entity.Mood;
+import com.moodleap.client.db.entity.MoodTag;
+import com.moodleap.client.db.entity.Tag;
+import com.moodleap.client.db.repository.TagRepository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MoodEntryFragment extends Fragment {
+
+    private TextView selectedMood;
+    private List<Tag> selectedTags = new ArrayList<>();
+    private LinearLayout tagContainer;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mood_entry, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_mood_entry, container, false);
+
+        setupMoodOptions(view);
+        setupTags(view);
+
+        Button btnCreate = view.findViewById(R.id.btnCreateMood);
+        btnCreate.setOnClickListener(v -> createMood());
+
+        return view;
+
+    }
+
+    private void setupMoodOptions(View view) {
+        int[] ids = {R.id.tvAwful, R.id.tvBad, R.id.tvNormal, R.id.tvGood, R.id.tvGreat};
+
+        for (int id : ids) {
+            TextView tv = view.findViewById(id);
+            tv.setTextSize(15);
+            tv.setOnClickListener(v -> {
+                if (selectedMood != null) selectedMood.setPaintFlags(0);
+                selectedMood = (TextView) v;
+                selectedMood.setPaintFlags(selectedMood.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            });
+        }
+    }
+
+    private void setupTags(View view) {
+        tagContainer = view.findViewById(R.id.tagContainer);
+        MainActivity.getTagRepository().getTags().observe(getViewLifecycleOwner(), tags -> {
+            for (Tag tag : tags) {
+                TextView tv = new TextView(getContext());
+                tv.setText(tag.title);
+                tv.setPadding(12, 8, 12, 8);
+                tv.setBackgroundResource(android.R.drawable.btn_default_small);
+                tv.setTextColor(Color.BLACK);
+                tv.setOnClickListener(v -> {
+                    if (selectedTags.contains(tag)) {
+                        selectedTags.remove(tag);
+                        tv.setPaintFlags(0);
+                    } else {
+                        selectedTags.add(tag);
+                        tv.setPaintFlags(tv.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                    }
+                });
+                tagContainer.addView(tv);
+            }
+        });
+    }
+
+    private void createMood() {
+        if (selectedMood == null) {
+            Toast.makeText(getContext(), "Choose mood", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String moodValue = selectedMood.getText().toString();
+        Long emotion = 2L;
+        switch (moodValue) {
+            case "Awful":
+                emotion = -2L;
+                break;
+            case "Bad":
+                emotion = -1L;
+                break;
+            case "Normal":
+                emotion = 0L;
+                break;
+            case "Good":
+                emotion = 1L;
+                break;
+        }
+        Long timestamp = Converters.fromLocalDateTime(LocalDateTime.now());
+        Mood mood = new Mood();
+        mood.emotion = emotion;
+        mood.timestamp = timestamp;
+        mood.userId = MainActivity.getUid(requireContext());
+        MainActivity.getMoodRepository().insert(mood);
+        Long id = mood.id;
+        for (Tag tag : selectedTags) {
+            MoodTag moodTag = new MoodTag();
+            moodTag.moodId = id;
+            moodTag.tagId = tag.id;
+            MainActivity.getMoodTagRepository().insert(moodTag);
+        }
+
+        Toast.makeText(getContext(),
+                "Mood created: " + moodValue + "\ntags: " + selectedTags,
+                Toast.LENGTH_SHORT).show();
     }
 
 }
