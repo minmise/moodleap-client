@@ -56,12 +56,12 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(v -> {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
-            MainActivity.getAuthService().login(email, password);
-            if (MainActivity.getToken(requireContext()) != null) {
+            MainActivity.getAuthService().login(email, password, (MainActivity)requireActivity());
+            /*if (MainActivity.getToken(requireContext()) != null) {
                 ((MainActivity)requireActivity()).showMainUi();
                 WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
                 WorkManager.getInstance(requireContext()).enqueue(syncRequest);
-            }
+            }*/
         });
     }
 

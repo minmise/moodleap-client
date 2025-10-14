@@ -30,6 +30,7 @@ import com.moodleap.client.requests.service.AuthService;
 import com.moodleap.client.requests.service.MoodService;
 import com.moodleap.client.requests.service.TagService;
 import com.moodleap.client.ui.authorization.LoginFragment;
+import com.moodleap.client.ui.authorization.RegisterFragment;
 import com.moodleap.client.ui.main.MoodEntryFragment;
 import com.moodleap.client.ui.main.StatisticsFragment;
 import com.moodleap.client.ui.main.UserInfoFragment;
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private static MoodRepository moodRepository;
     private static TagRepository tagRepository;
     private static MoodTagRepository moodTagRepository;
+    private static MoodEntryFragment moodEntryFragment;
+    private static StatisticsFragment statisticsFragment;
+    private static UserInfoFragment userInfoFragment;
+    private static LoginFragment loginFragment;
+    private static RegisterFragment registerFragment;
 
     private FrameLayout authContainer;
     private LinearLayout mainContainer;
@@ -97,6 +103,26 @@ public class MainActivity extends AppCompatActivity {
         return moodService;
     }
 
+    public static LoginFragment getLoginFragment() {
+        return loginFragment;
+    }
+
+    public static RegisterFragment getRegisterFragment() {
+        return registerFragment;
+    }
+
+    public static MoodEntryFragment getMoodEntryFragment() {
+        return moodEntryFragment;
+    }
+
+    public static StatisticsFragment getStatisticsFragment() {
+        return statisticsFragment;
+    }
+
+    public static UserInfoFragment getUserInfoFragment() {
+        return userInfoFragment;
+    }
+
     public static AppDatabase getDb() {
         return db;
     }
@@ -123,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         mainContainer.setVisibility(View.GONE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.auth_container, new LoginFragment())
+                .replace(R.id.auth_container, getLoginFragment())
                 .commit();
     }
 
@@ -132,18 +158,19 @@ public class MainActivity extends AppCompatActivity {
         mainContainer.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new MoodEntryFragment())
+                .replace(R.id.fragment_container, getMoodEntryFragment())
                 .commit();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setSelectedItemId(R.id.nav_mood);
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selected = null;
             if (item.getItemId() == R.id.nav_mood) {
-                selected = new MoodEntryFragment();
+                selected = getMoodEntryFragment();
             } else if (item.getItemId() == R.id.nav_statistics) {
-                selected = new StatisticsFragment();
+                selected = getStatisticsFragment();
             } else if (item.getItemId() == R.id.nav_profile) {
-                selected = new UserInfoFragment();
+                selected = getUserInfoFragment();
             }
             if (selected != null) {
                 getSupportFragmentManager()
@@ -179,12 +206,27 @@ public class MainActivity extends AppCompatActivity {
         if (moodService == null) {
             moodService = new MoodService(this);
         }
+        if (loginFragment == null) {
+            loginFragment = new LoginFragment();
+        }
+        if (registerFragment == null) {
+            registerFragment = new RegisterFragment();
+        }
+        if (moodEntryFragment == null) {
+            moodEntryFragment = new MoodEntryFragment();
+        }
+        if (statisticsFragment == null) {
+            statisticsFragment = new StatisticsFragment();
+        }
+        if (userInfoFragment == null) {
+            userInfoFragment = new UserInfoFragment();
+        }
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "moodleap").build();
         moodRepository = new MoodRepository(db);
         tagRepository = new TagRepository(db);
         moodTagRepository = new MoodTagRepository(db);
         PeriodicWorkRequest periodicSync =
-                new PeriodicWorkRequest.Builder(SyncWorker.class, 5, TimeUnit.MINUTES)
+                new PeriodicWorkRequest.Builder(SyncWorker.class, 15, TimeUnit.MINUTES)
                         .setConstraints(
                                 new Constraints.Builder()
                                         .setRequiredNetworkType(NetworkType.CONNECTED)

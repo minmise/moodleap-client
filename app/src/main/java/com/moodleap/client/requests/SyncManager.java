@@ -1,5 +1,7 @@
 package com.moodleap.client.requests;
 
+import android.util.Log;
+
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.MoodTag;
@@ -39,12 +41,14 @@ public class SyncManager {
     private void uploadUnsyncedMoods() throws IOException {
         List<Mood> unsyncedMoods = moodRepository.getUnsyncedMoodsByUserId(MainActivity.getUid(moodService.getContext()));
         for (Mood mood : unsyncedMoods) {
-
+            List<MoodTag> moodTags = moodTagRepository.getTagsByMoodIdUnlive(mood.id);
+            Log.d("SYNC_DEBUG", moodTags.toString());
+            List<Tag> tags = moodTagRepository.getTagsByMoodIdUnlive(mood.id).stream()
+                    .map(moodTag -> tagRepository.getTagById(moodTag.tagId)).collect(Collectors.toList());
+            Log.d("SYNC_DEBUG", tags.toString());
             Response<MoodDto> response = moodService.createMood(MainActivity.getToken(moodService.getContext()),
-                    new MoodDto(mood, moodTagRepository.getTagsByMoodIdUnlive(mood.id).stream()
-                            .map(moodTag -> tagRepository.getTagById(moodTag.tagId)).collect(Collectors.toList())))
-                    .execute();
-            if (response.isSuccessful()) {
+                    new MoodDto(mood, tags)).execute();
+            if (response.isSuccessful() && response.body() != null) {
                 mood.isSynced = true;
                 mood.serverId = response.body().getId();
                 moodRepository.update(mood);
@@ -63,12 +67,11 @@ public class SyncManager {
                 mood.serverId = moodDto.getId();
                 List<TagDto> tags = moodDto.getTags();
                 if (moodRepository.getMoodByServerId(mood.serverId) == null) {
-                    moodRepository.insert(mood);
-                    Long moodId = moodRepository.getMoodByServerId(mood.serverId).id;
+                    moodRepository.insert(mood, id -> mood.id = id);
                     for (TagDto tagDto : tags) {
                         Long tagId = tagRepository.getTagByServerId(tagDto.getId()).id;
                         MoodTag moodTag = new MoodTag();
-                        moodTag.moodId = moodId;
+                        moodTag.moodId = mood.id;
                         moodTag.tagId = tagId;
                         moodTagRepository.insert(moodTag);
                     }
@@ -81,10 +84,12 @@ public class SyncManager {
         Response<List<TagDto>> response = tagService.getTags(MainActivity.getToken(tagService.getContext())).execute();
         if (response.isSuccessful() && response.body() != null) {
             for (TagDto tagDto : response.body()) {
+                Log.d("SYNC_TAGS_1", tagDto.getTitle());
                 Tag tag = new Tag();
                 tag.title = tagDto.getTitle();
                 tag.serverId = tagDto.getId();
                 tagRepository.insertOrUpdate(tag);
+                Log.d("SYNC_TAGS_2", tagRepository.getTagByServerId(tag.serverId).title);
             }
         }
     }

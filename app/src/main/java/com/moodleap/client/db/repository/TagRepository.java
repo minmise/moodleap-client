@@ -1,5 +1,7 @@
 package com.moodleap.client.db.repository;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 
 import com.moodleap.client.MainActivity;
@@ -28,8 +30,11 @@ public class TagRepository {
 
     public void insertOrUpdate(Tag tag) {
         if (tagDao.getTagByServerId(tag.serverId) == null) {
+            Log.d("SYNC_TAGS_OP", "insert");
             insert(tag);
         } else {
+            Log.d("SYNC_TAGS_OP", "update");
+            tag.id = tagDao.getTagByServerId(tag.serverId).id;
             update(tag);
         }
     }

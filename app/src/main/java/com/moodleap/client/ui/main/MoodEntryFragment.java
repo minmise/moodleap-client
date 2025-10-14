@@ -3,6 +3,7 @@ package com.moodleap.client.ui.main;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
@@ -23,6 +27,7 @@ import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.MoodTag;
 import com.moodleap.client.db.entity.Tag;
 import com.moodleap.client.db.repository.TagRepository;
+import com.moodleap.client.requests.SyncWorker;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,9 +74,12 @@ public class MoodEntryFragment extends Fragment {
     private void setupTags(View view) {
         tagContainer = view.findViewById(R.id.tagContainer);
         MainActivity.getTagRepository().getTags().observe(getViewLifecycleOwner(), tags -> {
+            Log.d("TAG_OBSERVATION", "started");
+            tagContainer.removeAllViews();
             for (Tag tag : tags) {
                 TextView tv = new TextView(getContext());
                 tv.setText(tag.title);
+                Log.d("TAG_OBSERVATION", "setted " + tag.title);
                 tv.setPadding(12, 8, 12, 8);
                 tv.setBackgroundResource(android.R.drawable.btn_default_small);
                 tv.setTextColor(Color.BLACK);
@@ -86,6 +94,7 @@ public class MoodEntryFragment extends Fragment {
                 });
                 tagContainer.addView(tv);
             }
+            Log.d("TAG_OBSERVATION", "ended");
         });
     }
 
@@ -116,18 +125,40 @@ public class MoodEntryFragment extends Fragment {
         mood.emotion = emotion;
         mood.timestamp = timestamp;
         mood.userId = MainActivity.getUid(requireContext());
-        MainActivity.getMoodRepository().insert(mood);
-        Long id = mood.id;
+        MainActivity.getMoodRepository().insert(mood, id -> {
+            //Log.d("SYNC_DEBUG", id.toString());
+            for (Tag tag : selectedTags) {
+                MoodTag moodTag = new MoodTag();
+                moodTag.moodId = id;
+                moodTag.tagId = tag.id;
+                Log.d("SYNC_DEBUG", moodTag.toString());
+                MainActivity.getMoodTagRepository().insert(moodTag);
+            }
+            Toast.makeText(getContext(),
+                    "Mood created: " + moodValue + "\ntags: " + selectedTags,
+                    Toast.LENGTH_SHORT).show();
+            selectedTags.clear();
+            WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+            WorkManager.getInstance(requireContext()).enqueue(syncRequest);
+
+        });
+        /* //Log.d("SYNC_DEBUG", id.toString());
         for (Tag tag : selectedTags) {
             MoodTag moodTag = new MoodTag();
             moodTag.moodId = id;
             moodTag.tagId = tag.id;
+            Log.d("SYNC_DEBUG", moodTag.toString());
             MainActivity.getMoodTagRepository().insert(moodTag);
         }
 
         Toast.makeText(getContext(),
                 "Mood created: " + moodValue + "\ntags: " + selectedTags,
                 Toast.LENGTH_SHORT).show();
+
+        WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+        WorkManager.getInstance(requireContext()).enqueue(syncRequest);
+
+         */
     }
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface MoodDao {
     @Insert
-    void insert(Mood mood);
+    Long insert(Mood mood);
 
     @Query("SELECT * FROM moods WHERE userId = :userId")
     LiveData<List<Mood>> getMoodsByUserId(String userId);

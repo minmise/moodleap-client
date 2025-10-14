@@ -1,6 +1,7 @@
 package com.moodleap.client.requests;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -34,9 +35,10 @@ public class SyncWorker extends Worker {
     public Result doWork() {
         try {
             syncManager.syncAll();
+            Log.d("LOGIN_SYNC", "correct");
             return Result.success();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("LOGIN_SYNC", e.toString());
             return Result.retry();
         }
     }

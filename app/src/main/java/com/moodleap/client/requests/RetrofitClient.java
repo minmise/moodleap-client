@@ -1,6 +1,7 @@
 package com.moodleap.client.requests;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.moodleap.client.Config;
 
@@ -14,9 +15,15 @@ public class RetrofitClient {
 
     public static Retrofit getInstance(Context context) {
         if (retrofit == null) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> Log.d("OkHttp", message));
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .build();
             String url = Config.getBaseUrl(context);
             retrofit = new Retrofit.Builder()
                     .baseUrl(url)
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

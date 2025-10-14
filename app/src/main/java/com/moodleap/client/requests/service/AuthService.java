@@ -4,11 +4,15 @@ import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.dto.AuthResponse;
 import com.moodleap.client.dto.LoginRequest;
 import com.moodleap.client.dto.RegisterRequest;
+import com.moodleap.client.requests.SyncWorker;
 import com.moodleap.client.requests.api.AuthApi;
 import com.moodleap.client.requests.RetrofitClient;
 
@@ -45,7 +49,7 @@ public class AuthService {
         });
     }
 
-    public void login(String email, String password) {
+    public void login(String email, String password, MainActivity mainActivity) {
         Call<AuthResponse> call = api.login(new LoginRequest(email, password));
         call.enqueue(new Callback<AuthResponse>() {
             @Override
@@ -55,6 +59,11 @@ public class AuthService {
                     MainActivity.saveToken(context, response.body().getToken());
                     MainActivity.saveUid(context, response.body().getUid());
                     MainActivity.saveEmail(context, email);
+                    if (MainActivity.getToken(context) != null) {
+                        mainActivity.showMainUi();
+                        WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+                        WorkManager.getInstance(context).enqueue(syncRequest);
+                    }
                 } else {
                     Toast.makeText(context, "Error: " + response.code(), Toast.LENGTH_LONG).show();
                 }
