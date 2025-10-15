@@ -11,6 +11,7 @@ import com.moodleap.client.MainActivity;
 import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.dao.MoodDao;
 import com.moodleap.client.db.entity.Mood;
+import com.moodleap.client.db.entity.MoodWithTags;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -53,6 +54,10 @@ public class MoodRepository {
 
     public Mood getMoodByServerId(Long serverId) {
         return moodDao.getMoodByServerId(serverId);
+    }
+
+    public LiveData<List<MoodWithTags>> getMoodsWithTagsByUserId(String userId) {
+        return moodDao.getMoodsWithTags(userId);
     }
 
 }

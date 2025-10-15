@@ -5,9 +5,11 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.moodleap.client.db.entity.Mood;
+import com.moodleap.client.db.entity.MoodWithTags;
 
 import java.util.List;
 
@@ -30,4 +32,8 @@ public interface MoodDao {
 
     @Delete
     void delete(Mood mood);
+
+    @Transaction
+    @Query("SELECT * FROM moods WHERE userId = :userId ORDER BY timestamp DESC")
+    LiveData<List<MoodWithTags>> getMoodsWithTags(String userId);
 }

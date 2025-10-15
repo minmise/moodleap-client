@@ -16,6 +16,7 @@ import com.moodleap.client.requests.service.TagService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import retrofit2.Response;
@@ -65,16 +66,25 @@ public class SyncManager {
                 mood.timestamp = moodDto.getTimestamp();
                 mood.userId = moodDto.getUserId();
                 mood.serverId = moodDto.getId();
+                mood.isSynced = true;
                 List<TagDto> tags = moodDto.getTags();
                 if (moodRepository.getMoodByServerId(mood.serverId) == null) {
-                    moodRepository.insert(mood, id -> mood.id = id);
-                    for (TagDto tagDto : tags) {
-                        Long tagId = tagRepository.getTagByServerId(tagDto.getId()).id;
-                        MoodTag moodTag = new MoodTag();
-                        moodTag.moodId = mood.id;
-                        moodTag.tagId = tagId;
-                        moodTagRepository.insert(moodTag);
-                    }
+                    Log.d("FETCH_MOODS", "start_new_insertion");
+                    moodRepository.insert(mood, id -> {
+                        mood.id = id;
+                        Executors.newSingleThreadExecutor().execute(() -> {
+                            for (TagDto tagDto : tags) {
+                                Long tagId = tagRepository.getTagByServerId(tagDto.getId()).id;
+                                Log.d("FETCH_MOODS", "tag: " + tagId.toString());
+                                MoodTag moodTag = new MoodTag();
+                                moodTag.moodId = mood.id;
+                                moodTag.tagId = tagId;
+                                moodTagRepository.insert(moodTag);
+                            }
+                            Log.d("FETCH_MOODS", "end_new_insertion");
+                        });
+
+                    });
                 }
             }
         }

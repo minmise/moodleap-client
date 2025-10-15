@@ -105,21 +105,7 @@ public class MoodEntryFragment extends Fragment {
         }
 
         String moodValue = selectedMood.getText().toString();
-        Long emotion = 2L;
-        switch (moodValue) {
-            case "Awful":
-                emotion = -2L;
-                break;
-            case "Bad":
-                emotion = -1L;
-                break;
-            case "Normal":
-                emotion = 0L;
-                break;
-            case "Good":
-                emotion = 1L;
-                break;
-        }
+        Long emotion = MoodConverter.stringToLong(moodValue);
         Long timestamp = Converters.fromLocalDateTime(LocalDateTime.now());
         Mood mood = new Mood();
         mood.emotion = emotion;

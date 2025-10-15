@@ -3,11 +3,13 @@ package com.moodleap.client.db.repository;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.dao.TagDao;
 import com.moodleap.client.db.entity.Tag;
+import com.moodleap.client.db.entity.TagWithUsage;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,6 +43,15 @@ public class TagRepository {
 
     public LiveData<List<Tag>> getTags() {
         return tagDao.getTags();
+    }
+
+    public LiveData<List<TagWithUsage>> getTagsWithUsageCount(String userId) {
+        MutableLiveData<List<TagWithUsage>> data = new MutableLiveData<>();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<TagWithUsage> tags = tagDao.getTagsWithUsageCount(userId);
+            data.postValue(tags);
+        });
+        return data;
     }
 
     public Tag getTagByServerId(Long serverId) {
