@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.moodleap.client.DatabaseManager;
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.db.AppDatabase;
 import com.moodleap.client.db.repository.MoodRepository;
@@ -21,7 +22,7 @@ public class SyncWorker extends Worker {
 
     public SyncWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
-        AppDatabase db = MainActivity.getDb();
+        AppDatabase db = DatabaseManager.getDb();
         MoodService moodService = new MoodService(context);
         TagService tagService = new TagService(context);
         MoodRepository moodRepository = new MoodRepository(db);

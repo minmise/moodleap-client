@@ -13,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
+import com.moodleap.client.ServiceManager;
 
 public class RegisterFragment extends Fragment {
 
@@ -43,7 +44,7 @@ public class RegisterFragment extends Fragment {
                 Toast.makeText(getContext(), "Passwords are different", Toast.LENGTH_LONG).show();
                 return;
             }
-            MainActivity.getAuthService().register(email, password);
+            ServiceManager.getAuthService().register(email, password);
         });
     }
 

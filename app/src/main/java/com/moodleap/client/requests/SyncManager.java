@@ -3,6 +3,7 @@ package com.moodleap.client.requests;
 import android.util.Log;
 
 import com.moodleap.client.MainActivity;
+import com.moodleap.client.UserManager;
 import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.MoodTag;
 import com.moodleap.client.db.entity.Tag;
@@ -40,14 +41,14 @@ public class SyncManager {
     }
 
     private void uploadUnsyncedMoods() throws IOException {
-        List<Mood> unsyncedMoods = moodRepository.getUnsyncedMoodsByUserId(MainActivity.getUid(moodService.getContext()));
+        List<Mood> unsyncedMoods = moodRepository.getUnsyncedMoodsByUserId(UserManager.getUid(moodService.getContext()));
         for (Mood mood : unsyncedMoods) {
             List<MoodTag> moodTags = moodTagRepository.getTagsByMoodIdUnlive(mood.id);
             Log.d("SYNC_DEBUG", moodTags.toString());
             List<Tag> tags = moodTagRepository.getTagsByMoodIdUnlive(mood.id).stream()
                     .map(moodTag -> tagRepository.getTagById(moodTag.tagId)).collect(Collectors.toList());
             Log.d("SYNC_DEBUG", tags.toString());
-            Response<MoodDto> response = moodService.createMood(MainActivity.getToken(moodService.getContext()),
+            Response<MoodDto> response = moodService.createMood(UserManager.getToken(moodService.getContext()),
                     new MoodDto(mood, tags)).execute();
             if (response.isSuccessful() && response.body() != null) {
                 mood.isSynced = true;
@@ -58,7 +59,7 @@ public class SyncManager {
     }
 
     private void fetchMoodsFromServer() throws IOException {
-        Response<List<MoodDto>> response = moodService.getMoods(MainActivity.getToken(moodService.getContext())).execute();
+        Response<List<MoodDto>> response = moodService.getMoods(UserManager.getToken(moodService.getContext())).execute();
         if (response.isSuccessful() && response.body() != null) {
             for (MoodDto moodDto : response.body()) {
                 Mood mood = new Mood();
@@ -91,7 +92,7 @@ public class SyncManager {
     }
 
     private void fetchTagsFromServer() throws IOException {
-        Response<List<TagDto>> response = tagService.getTags(MainActivity.getToken(tagService.getContext())).execute();
+        Response<List<TagDto>> response = tagService.getTags(UserManager.getToken(tagService.getContext())).execute();
         if (response.isSuccessful() && response.body() != null) {
             for (TagDto tagDto : response.body()) {
                 Log.d("SYNC_TAGS_1", tagDto.getTitle());

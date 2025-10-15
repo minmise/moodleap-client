@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.moodleap.client.DatabaseManager;
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
+import com.moodleap.client.UserManager;
 import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.Tag;
 import com.moodleap.client.db.entity.TagWithUsage;
@@ -51,10 +53,10 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void observeData() {
-        TagRepository tagRepository = MainActivity.getTagRepository();
-        MoodRepository moodRepository = MainActivity.getMoodRepository();
+        TagRepository tagRepository = DatabaseManager.getTagRepository();
+        MoodRepository moodRepository = DatabaseManager.getMoodRepository();
 
-        tagRepository.getTagsWithUsageCount(MainActivity.getUid(requireContext())).observe(getViewLifecycleOwner(), tags -> {
+        tagRepository.getTagsWithUsageCount(UserManager.getUid(requireContext())).observe(getViewLifecycleOwner(), tags -> {
             tagStatsContainer.removeAllViews();
             for (TagWithUsage tagWU : tags) {
                 TextView tv = new TextView(getContext());
@@ -65,7 +67,7 @@ public class StatisticsFragment extends Fragment {
             }
         });
 
-        moodRepository.getMoodsWithTagsByUserId(MainActivity.getUid(requireContext())).observe(getViewLifecycleOwner(), moods -> {
+        moodRepository.getMoodsWithTagsByUserId(UserManager.getUid(requireContext())).observe(getViewLifecycleOwner(), moods -> {
             moodAdapter.setMoods(moods);
         });
     }

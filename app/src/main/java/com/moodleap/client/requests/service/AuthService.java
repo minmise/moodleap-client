@@ -9,6 +9,7 @@ import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
 import com.moodleap.client.MainActivity;
+import com.moodleap.client.UserManager;
 import com.moodleap.client.dto.AuthResponse;
 import com.moodleap.client.dto.LoginRequest;
 import com.moodleap.client.dto.RegisterRequest;
@@ -56,10 +57,10 @@ public class AuthService {
             public void onResponse(@NonNull Call<AuthResponse> call, @NonNull Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     //Toast.makeText(context, "jwt: " + response.body().getToken(), Toast.LENGTH_LONG).show();
-                    MainActivity.saveToken(context, response.body().getToken());
-                    MainActivity.saveUid(context, response.body().getUid());
-                    MainActivity.saveEmail(context, email);
-                    if (MainActivity.getToken(context) != null) {
+                    UserManager.saveToken(context, response.body().getToken());
+                    UserManager.saveUid(context, response.body().getUid());
+                    UserManager.saveEmail(context, email);
+                    if (UserManager.getToken(context) != null) {
                         mainActivity.showMainUi();
                         WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
                         WorkManager.getInstance(context).enqueue(syncRequest);

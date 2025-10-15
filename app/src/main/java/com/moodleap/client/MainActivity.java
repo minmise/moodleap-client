@@ -39,105 +39,26 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    /*
+
     private static AuthService authService;
     private static TagService tagService;
     private static MoodService moodService;
+
     private static AppDatabase db;
     private static MoodRepository moodRepository;
     private static TagRepository tagRepository;
     private static MoodTagRepository moodTagRepository;
+
     private static MoodEntryFragment moodEntryFragment;
     private static StatisticsFragment statisticsFragment;
     private static UserInfoFragment userInfoFragment;
     private static LoginFragment loginFragment;
     private static RegisterFragment registerFragment;
 
+     */
     private FrameLayout authContainer;
     private LinearLayout mainContainer;
-
-    public static void saveUid(Context context, String uid) {
-        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .edit()
-                .putString("uid", uid)
-                .apply();
-    }
-
-    public static String getUid(Context context) {
-        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .getString("uid", null);
-    }
-
-    public static void saveToken(Context context, String token) {
-        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .edit()
-                .putString("jwt_token", token)
-                .apply();
-    }
-
-    public static String getToken(Context context) {
-        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .getString("jwt_token", null);
-    }
-
-    public static void saveEmail(Context context, String email) {
-        context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .edit()
-                .putString("email", email)
-                .apply();
-    }
-
-    public static String getEmail(Context context) {
-        return context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                .getString("email", null);
-    }
-
-    public static AuthService getAuthService() {
-        return authService;
-    }
-
-    public static TagService getTagService() {
-        return tagService;
-    }
-
-    public static MoodService getMoodService() {
-        return moodService;
-    }
-
-    public static LoginFragment getLoginFragment() {
-        return loginFragment;
-    }
-
-    public static RegisterFragment getRegisterFragment() {
-        return registerFragment;
-    }
-
-    public static MoodEntryFragment getMoodEntryFragment() {
-        return moodEntryFragment;
-    }
-
-    public static StatisticsFragment getStatisticsFragment() {
-        return statisticsFragment;
-    }
-
-    public static UserInfoFragment getUserInfoFragment() {
-        return userInfoFragment;
-    }
-
-    public static AppDatabase getDb() {
-        return db;
-    }
-
-    public static MoodRepository getMoodRepository() {
-        return moodRepository;
-    }
-
-    public static TagRepository getTagRepository() {
-        return tagRepository;
-    }
-
-    public static MoodTagRepository getMoodTagRepository() {
-        return moodTagRepository;
-    }
 
     private boolean isUserLoggedIn() {
         SharedPreferences prefs = getSharedPreferences("auth", MODE_PRIVATE);
@@ -149,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         mainContainer.setVisibility(View.GONE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.auth_container, getLoginFragment())
+                .replace(R.id.auth_container, AppFragmentManager.getLoginFragment())
                 .commit();
     }
 
@@ -158,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         mainContainer.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, getMoodEntryFragment())
+                .replace(R.id.fragment_container, AppFragmentManager.getMoodEntryFragment())
                 .commit();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
@@ -166,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selected = null;
             if (item.getItemId() == R.id.nav_mood) {
-                selected = getMoodEntryFragment();
+                selected = AppFragmentManager.getMoodEntryFragment();
             } else if (item.getItemId() == R.id.nav_statistics) {
-                selected = getStatisticsFragment();
+                selected = AppFragmentManager.getStatisticsFragment();
             } else if (item.getItemId() == R.id.nav_profile) {
-                selected = getUserInfoFragment();
+                selected = AppFragmentManager.getUserInfoFragment();
             }
             if (selected != null) {
                 getSupportFragmentManager()
@@ -197,34 +118,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        if (authService == null) {
-            authService = new AuthService(this);
-        }
-        if (tagService == null) {
-            tagService = new TagService(this);
-        }
-        if (moodService == null) {
-            moodService = new MoodService(this);
-        }
-        if (loginFragment == null) {
-            loginFragment = new LoginFragment();
-        }
-        if (registerFragment == null) {
-            registerFragment = new RegisterFragment();
-        }
-        if (moodEntryFragment == null) {
-            moodEntryFragment = new MoodEntryFragment();
-        }
-        if (statisticsFragment == null) {
-            statisticsFragment = new StatisticsFragment();
-        }
-        if (userInfoFragment == null) {
-            userInfoFragment = new UserInfoFragment();
-        }
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "moodleap").build();
-        moodRepository = new MoodRepository(db);
-        tagRepository = new TagRepository(db);
-        moodTagRepository = new MoodTagRepository(db);
+        ServiceManager.init(this);
+        AppFragmentManager.init();
+        DatabaseManager.init(getApplicationContext());
         PeriodicWorkRequest periodicSync =
                 new PeriodicWorkRequest.Builder(SyncWorker.class, 15, TimeUnit.MINUTES)
                         .setConstraints(

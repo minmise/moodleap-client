@@ -20,8 +20,10 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import com.moodleap.client.DatabaseManager;
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
+import com.moodleap.client.UserManager;
 import com.moodleap.client.db.Converters;
 import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.MoodTag;
@@ -73,7 +75,7 @@ public class MoodEntryFragment extends Fragment {
 
     private void setupTags(View view) {
         tagContainer = view.findViewById(R.id.tagContainer);
-        MainActivity.getTagRepository().getTags().observe(getViewLifecycleOwner(), tags -> {
+        DatabaseManager.getTagRepository().getTags().observe(getViewLifecycleOwner(), tags -> {
             Log.d("TAG_OBSERVATION", "started");
             tagContainer.removeAllViews();
             for (Tag tag : tags) {
@@ -110,15 +112,15 @@ public class MoodEntryFragment extends Fragment {
         Mood mood = new Mood();
         mood.emotion = emotion;
         mood.timestamp = timestamp;
-        mood.userId = MainActivity.getUid(requireContext());
-        MainActivity.getMoodRepository().insert(mood, id -> {
+        mood.userId = UserManager.getUid(requireContext());
+        DatabaseManager.getMoodRepository().insert(mood, id -> {
             //Log.d("SYNC_DEBUG", id.toString());
             for (Tag tag : selectedTags) {
                 MoodTag moodTag = new MoodTag();
                 moodTag.moodId = id;
                 moodTag.tagId = tag.id;
                 Log.d("SYNC_DEBUG", moodTag.toString());
-                MainActivity.getMoodTagRepository().insert(moodTag);
+                DatabaseManager.getMoodTagRepository().insert(moodTag);
             }
             Toast.makeText(getContext(),
                     "Mood created: " + moodValue + "\ntags: " + selectedTags,

@@ -15,8 +15,10 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import com.moodleap.client.AppFragmentManager;
 import com.moodleap.client.MainActivity;
 import com.moodleap.client.R;
+import com.moodleap.client.ServiceManager;
 import com.moodleap.client.db.Converters;
 import com.moodleap.client.db.entity.Mood;
 import com.moodleap.client.db.entity.Tag;
@@ -46,7 +48,7 @@ public class LoginFragment extends Fragment {
         btnRegister.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.auth_container, new RegisterFragment())
+                    .replace(R.id.auth_container, AppFragmentManager.getRegisterFragment())
                     .commit();
         });
 
@@ -56,7 +58,7 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(v -> {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
-            MainActivity.getAuthService().login(email, password, (MainActivity)requireActivity());
+            ServiceManager.getAuthService().login(email, password, (MainActivity)requireActivity());
             /*if (MainActivity.getToken(requireContext()) != null) {
                 ((MainActivity)requireActivity()).showMainUi();
                 WorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
