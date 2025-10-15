@@ -24,17 +24,37 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:text="Mood history"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/moodHistoryRecycler"
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:orientation="horizontal"
+            android:paddingHorizontal="0dp"
+            android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="8dp"
+                    android:text="Mood history"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/exportCsvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Export to CSV"
+                    android:textSize="14sp" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/moodHistoryRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
